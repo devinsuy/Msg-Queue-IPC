@@ -1,16 +1,20 @@
-#ifndef _PROBE_C_
-#define _PROBE_C_
+#ifndef _PROBE_CHILD_
+#define _PROBE_CHILD_
 #include "probe.cpp"
+#endif
 
 class probeC : public probe {
 public:
-  probeC() : probe(257){probe::sendIDMsg('C');}
-  void deleteQ(){ probe::deleteQ('C'); }
+  int mTypeCounter;
+  probeB() : probe(251, 'C'), mTypeCounter(30000){ probe::sendIDMsg('C'); }
+  void deleteQ(){probe::deleteQ('C'); }
+  void initialize();
 };
-#endif
 
-int main(){
-  probeC c;
-
-
-}
+// void probeB::initialize(){
+//   while(!this->exitProbe){
+//     sendMsg(mTypeCounter, false);
+//     mTypeCounter++;
+//   }
+//   displayExit('C');
+// }

@@ -12,10 +12,10 @@ public:
   int msgCount;
   int msqID;
   int size;
+  int num_Active_Probes;
   pid_t hPID;
   pid_t aPID, bPID, cPID;
   long key;
-  //msgbuffer* messages;
   msgbuffer msgBuf;
   std::chrono::high_resolution_clock::time_point start_time;
   std::chrono::high_resolution_clock::time_point t;
@@ -27,6 +27,7 @@ public:
   void deleteQ();
   void initialize();
   void idProbes();
+  void performExit();
   long getTime();
 };
 

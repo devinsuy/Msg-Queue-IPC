@@ -6,7 +6,7 @@
 class probeA : public probe {
 public:
   int mTypeCounter;
-  probeA() : probe(997), mTypeCounter(1){std::cout << "A initialized with PID " << this->PID; probe::sendIDMsg('A'); }
+  probeA() : probe(997, 'A'), mTypeCounter(1){ probe::sendIDMsg('A'); }
   void deleteQ(){probe::deleteQ('A');}
   void initialize();
 };
@@ -16,5 +16,6 @@ void probeA::initialize(){
     sendMsg(mTypeCounter, true);
     mTypeCounter++;
   }
+  sendSignalMsg(77777);
   displayExit('A');
 };

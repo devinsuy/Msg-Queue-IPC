@@ -6,15 +6,14 @@
 class probeB : public probe {
 public:
   int mTypeCounter;
-  probeB() : probe(257), mTypeCounter(10000){std::cout << "B initialized with PID " << this->PID; probe::sendIDMsg('B'); }
+  probeB() : probe(257, 'B'), mTypeCounter(20000){ probe::sendIDMsg('B'); }
   void deleteQ(){probe::deleteQ('B'); }
   void initialize();
 };
 
 void probeB::initialize(){
-  while(!this->exitProbe){
+  while(true){ // Exited by force_patch
     sendMsg(mTypeCounter, false);
     mTypeCounter++;
   }
-  displayExit('B');
 }

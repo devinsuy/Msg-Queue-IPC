@@ -11,7 +11,7 @@
 
 class probe {
 protected: // We don't ever want to instantiate probe class
-  probe(int seedValue);
+  probe(int seedValue, char probeLetter);
 
   bool exitProbe;
   int PID;
@@ -19,6 +19,7 @@ protected: // We don't ever want to instantiate probe class
   int seed;
   int msqID;
   int size;
+  char letter;
   msgbuffer msgBuf;
   std::chrono::high_resolution_clock::time_point start_time;
   std::chrono::high_resolution_clock::time_point t;
@@ -31,6 +32,7 @@ protected: // We don't ever want to instantiate probe class
   void deleteQ(char);
   void exit();
   void displayExit(char);
+  void sendSignalMsg(int);
   long getTime();
 
 };
