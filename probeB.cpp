@@ -6,8 +6,7 @@
 class probeB : public probe {
 public:
   int mTypeCounter;
-  probeB() : probe(257, 'B'), mTypeCounter(20000){ probe::sendIDMsg('B'); }
-  void deleteQ(){probe::deleteQ('B'); }
+  probeB() : probe(257, 'B'), mTypeCounter(200000){ probe::sendIDMsg('B'); }
   void initialize();
 };
 

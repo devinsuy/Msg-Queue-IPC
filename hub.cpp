@@ -3,9 +3,7 @@
 hub::hub(){
   size = sizeof(msgBuf) - sizeof(long);
   msgCount = 0;
-
-  num_Active_Probes = 2;
-  //num_Active_Probes = 3;
+  num_Active_Probes = 3;
 
   hPID = getpid();
 
@@ -15,18 +13,17 @@ hub::hub(){
   start_time = std::chrono::high_resolution_clock::now();
 }
 
-
 // Associates each probe with a corresponding PID
 void hub::idProbes(){
   IDbuffer idMsg;
   int ID_MSG_SIZE = sizeof(IDbuffer) - sizeof(long);
 
-  msgrcv(msqID, (struct msgbuf *)&idMsg, ID_MSG_SIZE, 22220, 0);
+  msgrcv(msqID, (struct msgbuf *)&idMsg, ID_MSG_SIZE, 5555550, 0);
   aPID = idMsg.PID;
-  msgrcv(msqID, (struct msgbuf *)&idMsg, ID_MSG_SIZE, 22221, 0);
+  msgrcv(msqID, (struct msgbuf *)&idMsg, ID_MSG_SIZE, 5555551, 0);
   bPID = idMsg.PID;
-  // msgrcv(msqID, (struct msgbuf *)&idMsg, ID_MSG_SIZE, 22222, 0);
-  // cPID = idMsg.PID;
+  msgrcv(msqID, (struct msgbuf *)&idMsg, ID_MSG_SIZE, 5555552, 0);
+  cPID = idMsg.PID;
 
 
   std::cout << "Hub is ready to recieve messages from Probes:\n   A(PID " << aPID
@@ -49,12 +46,18 @@ long hub::getTime(){
 void hub::rcvMsg(){
   msgbuffer msg;
   char probeLetter;
-  int msgType = 99999; // Gets the first msg in queue that isn't an acknowledgement msg
+  int msgType = 6666666; // Gets the first msg in queue that isn't an acknowledgement msg
   msgrcv(msqID, (struct msgbuf *)&msg, size, msgType, MSG_EXCEPT);
 
-  if(msg.PID == aPID) {
+  if(msg.mtype == 8888888){ // ProbeC has exited
+    std::cout << "-------------------------------------------------------------PROBE C TERMINATED\n";
+    num_Active_Probes--;
+    return;
+  }
+
+  else if(msg.PID == aPID) {
     probeLetter = 'A';
-    if(msg.mtype == 77777){ // ProbeA has exited
+    if(msg.mtype == 7777777){ // ProbeA has exited
       std::cout << "-------------------------------------------------------------PROBE A TERMINATED\n";
       num_Active_Probes--;
       return;
@@ -72,7 +75,7 @@ void hub::rcvMsg(){
 
 // Used to send an acknowledgement msg to probeA
 void hub::sendReturnMsg(){
-  msgBuf.mtype = 99999;
+  msgBuf.mtype = 6666666;
   msgBuf.msg = -1;
   msgBuf.PID = hPID;
   msgsnd(msqID, (struct msgbuf *)&msgBuf, size, 0);
@@ -84,12 +87,14 @@ void hub::sendReturnMsg(){
 
 void hub::deleteQ(){
   msgctl(msqID, IPC_RMID, NULL);
-  std::cout << "Queue deleted via hub . . ." << std::endl;
+  std::cout << "\nQueue deleted via hub . . ." << std::endl;
 }
+
 
 // Final function that is called at termination
 void hub::performExit(){
   std::cout << "\nAll probes have terminated, terminating DataHub\n";
+  std::cout << "Total number of messages recieved: " << msgCount << "\n";
   deleteQ();
 }
 
@@ -98,7 +103,7 @@ void hub::initialize(){
   while(num_Active_Probes > 0){
     rcvMsg();
     if(msgCount == 10000){ // Checks B exit condition
-      std::cout << "-----------------------------------------------------------------PROBE B KILLED\n";
+      std::cout << "-------------------------------------------------------------PROBE B TERMINATED\n";
       force_patch(bPID);
       num_Active_Probes--;
     }

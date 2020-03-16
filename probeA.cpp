@@ -7,7 +7,6 @@ class probeA : public probe {
 public:
   int mTypeCounter;
   probeA() : probe(997, 'A'), mTypeCounter(1){ probe::sendIDMsg('A'); }
-  void deleteQ(){probe::deleteQ('A');}
   void initialize();
 };
 
@@ -16,6 +15,5 @@ void probeA::initialize(){
     sendMsg(mTypeCounter, true);
     mTypeCounter++;
   }
-  sendSignalMsg(77777);
-  displayExit('A');
+  sendSignalMsg(7777777);
 };

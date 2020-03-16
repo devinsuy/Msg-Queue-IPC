@@ -34,6 +34,6 @@ protected: // We don't ever want to instantiate probe class
   void displayExit(char);
   void sendSignalMsg(int);
   long getTime();
-
 };
+
 #endif

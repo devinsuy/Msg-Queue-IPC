@@ -6,6 +6,7 @@ void probe::linkToQ(){
   msqID = msgget(key, 0);
 }
 
+
 probe::probe(int seedValue, char probeLetter): seed(seedValue), letter(probeLetter), exitProbe(false){
     linkToQ();
     this->PID = getpid();
@@ -39,7 +40,7 @@ void probe::generateReading(bool checkReading){
 
 // Retrieves a msg from q with given mtype will
 // retrieve acknowledgement msg from hub by default
-void probe::rcvMsg(int msgType = 99999){
+void probe::rcvMsg(int msgType = 6666666){
   msgbuffer msg;
   msgrcv(msqID, (struct msgbuf *)&msg, size, msgType, 0);
 
@@ -49,7 +50,7 @@ void probe::rcvMsg(int msgType = 99999){
 
 
 // Generates and sends a message to q with the given mtype
-// If sending from Prbe A, retrieves acknowledgement message
+// If sending from Probe A, retrieves acknowledgement message
 void probe::sendMsg(int msgType, bool fromA){
   generateReading(fromA);
   if(!exitProbe){
@@ -57,13 +58,13 @@ void probe::sendMsg(int msgType, bool fromA){
     msgBuf.PID = this->PID;
     msgsnd(msqID, (struct msgbuf *)&msgBuf, size, 0);
 
-
     std::cout << "Probe" << letter << "(PID " << this->PID << ") snd to hub with mtype " << msgBuf.mtype << ": " << msgBuf.msg
     << " (" << getTime() << "ns)" << std::endl;
 
     if(fromA){rcvMsg();}
   }
 }
+
 
 // Used to send a signal message to the Hub
 //  see README.txt for MType Codes
@@ -75,43 +76,22 @@ void probe::sendSignalMsg(int msgType){
 }
 
 
+// Associates each probe with its PID at initialization
 void probe::sendIDMsg(char probe){
   IDbuffer probeIDMsg;
   int ID_MSG_SIZE = sizeof(IDbuffer) - sizeof(long);
 
   switch(probe){
     case 'A':
-      probeIDMsg.mtype = 22220;
+      probeIDMsg.mtype = 5555550;
       break;
     case 'B':
-      probeIDMsg.mtype = 22221;
+      probeIDMsg.mtype = 5555551;
       break;
     case 'C':
-      probeIDMsg.mtype = 22222;
+      probeIDMsg.mtype = 5555552;
       break;
   }
   probeIDMsg.PID = this->PID;
   msgsnd(msqID, (struct IDbuffer *)&probeIDMsg, ID_MSG_SIZE, 0);
-}
-
-// 
-void probe::displayExit(char probe){
-  switch(probe){
-    case 'A':
-      std::cout << "A value smaller than 50 was produced" << std::endl;
-      break;
-    case 'B':
-      std::cout << "The DataHub has received 10,000 messages, initiating force_patch" << std::endl;
-    case 'C':
-      std::cout << "Initiating kill_patch" << std::endl;
-  }
-
-  std::cout << "Probe " << probe << " was terminated . . ." << std::endl;
-}
-
-
-// Deletes the queue, used when probe is last to read a msg
-void probe::deleteQ(char probeName){
-  msgctl(msqID, IPC_RMID, NULL);
-  std::cout << "Queue deleted via probe " << probeName << ". . ." << std::endl;
 }
