@@ -50,7 +50,8 @@ void hub::rcvMsg(){
   msgrcv(msqID, (struct msgbuf *)&msg, size, msgType, MSG_EXCEPT);
 
   if(msg.mtype == 8888888){ // ProbeC has exited
-    std::cout << "-------------------------------------------------------------PROBE C TERMINATED\n";
+    std::cout << "KILL_PATCH COMMAND ISSUED\n"
+    << "-------------------------------------------------------------PROBE C TERMINATED\n";
     num_Active_Probes--;
     return;
   }
@@ -58,7 +59,8 @@ void hub::rcvMsg(){
   else if(msg.PID == aPID) {
     probeLetter = 'A';
     if(msg.mtype == 7777777){ // ProbeA has exited
-      std::cout << "-------------------------------------------------------------PROBE A TERMINATED\n";
+      std::cout << "PROBE A GENERATED A VALUE LESS THAN 50\n"
+      << "-------------------------------------------------------------PROBE A TERMINATED\n";
       num_Active_Probes--;
       return;
     }
@@ -93,8 +95,11 @@ void hub::deleteQ(){
 
 // Final function that is called at termination
 void hub::performExit(){
+  struct msqid_ds buf;
+  msgctl(msqID, IPC_STAT, &buf);
   std::cout << "\nAll probes have terminated, terminating DataHub\n";
   std::cout << "Total number of messages recieved: " << msgCount << "\n";
+  std::cout << "Number of messages left in msg queue: " << buf.msg_qnum << "\n";
   deleteQ();
 }
 
@@ -103,7 +108,8 @@ void hub::initialize(){
   while(num_Active_Probes > 0){
     rcvMsg();
     if(msgCount == 10000){ // Checks B exit condition
-      std::cout << "-------------------------------------------------------------PROBE B TERMINATED\n";
+      std::cout << "HUB HAS RECIEVED 10,000 MESSAGES, FORCE_PATCH ISSUED\n"
+      << "-------------------------------------------------------------PROBE B TERMINATED\n";
       force_patch(bPID);
       num_Active_Probes--;
     }
