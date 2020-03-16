@@ -3,7 +3,7 @@ v1.3, 03/15/20
 Compile:
     1. Open terminal -> cd to IPC folder
     2. Enter "bash 1_runHub.sh" in one window
-    3. Enter "bashv2_runProbes.sh" in the other window
+    3. Enter "bash 2_runProbes.sh" in the other window
     4. Terminate probeC with command kill -10 (PID HERE)
 
 v1.1: Sets up IPC between Probes A&B with the DataHub
