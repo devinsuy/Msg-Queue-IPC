@@ -1,3 +1,28 @@
+Description: Implements inter-process communication between four concurrently executing
+programs: ProbeA, ProbeB, ProbeC, and DataHub through the usage of a single message
+queue with the fork(), msgget(), msgrcv(), msgsnd(), and msgctl() system calls.
+Each probe continues to generate a random integer that is divisible by its corresponding
+seed value to send as a “message” to the DataHub.
+Probe A’s random integer messages are all divisible by 997, Probe B’s by 257, and Probe
+C’s by 251. Each probe eventually terminates following it’s own exit condition. Probe A
+terminates upon randomly generating a value less than 50, upon receiving a total of
+10,000 message the Data Hub sends a signal to terminate Probe B, and Probe C is
+terminated by a user kill command.
+Probe A has special behavior in that it waits to receive an acknowledgement message
+from the DataHub after each it sends before it continues to send more messages, in
+which execution shifts to the other concurrently running probes.
+The fork() system call is utilized within a ProbeManager to assign each of the three
+probes a unique PID. Upon initialization each probe sends a single smaller message to
+the DataHub which is utilized to associate each probe with its corresponding PID. This
+PID is also utilized for specific behaviors such as determining whether or not to send an
+acknowledgement message, reducing the size of the msgbuffer structure used in our
+communication protocol.
+As overall behavior is fairly similar between probes, a Probe superclass is defined to
+avoid redundancy between Probes A, B and C which implement their differences in their
+own respective classes.
+Upon termination of all probes, the DataHub displays the total # of messages received
+and the number of messages remaining in queue (0) before deleting it and terminating.
+-----------------------------------------------------------------------------------------------------------------------------
 v1.3, 03/15/20
 
 Compile:
